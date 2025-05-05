@@ -17,14 +17,45 @@ func main() {
 				Usage:   "Operations on mailboxes",
 				Commands: []*cli.Command{
 					&cli.Command{
-						Name:  "list",
-						Usage: "List mailboxes",
-						Action: func(c context.Context, cmd *cli.Command) error {
-							fmt.Println("Listing mailboxes")
-							return nil
-						},
+						Name:   "list",
+						Usage:  "List mailboxes",
+						Action: listMailboxes,
 					},
 				},
+			},
+			&cli.Command{
+				Name:    "message",
+				Aliases: []string{"msg"},
+				Usage:   "Operations on email messages",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "mailbox",
+						Aliases:  []string{"m"},
+						Usage:    "Mailbox to operate on",
+						Required: true,
+					},
+				},
+				Commands: []*cli.Command{
+					&cli.Command{
+						Name:   "list",
+						Usage:  "list emails in a mailbox",
+						Action: listMessages,
+					},
+				},
+			},
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "username",
+				Usage:    "IMAP username",
+				Required: true,
+				Sources:  cli.EnvVars("IMAP_USERNAME"),
+			},
+			&cli.StringFlag{
+				Name:     "password",
+				Usage:    "IMAP password",
+				Required: true,
+				Sources:  cli.EnvVars("IMAP_PASSWORD"),
 			},
 		},
 	}
@@ -32,4 +63,5 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 }
