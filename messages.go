@@ -49,6 +49,10 @@ func ListMessages(client *client.Client, mailbox string) ([]*imap.Message, error
 		return nil, err
 	}
 
+	if mbox.Messages == 0 {
+		return []*imap.Message{}, nil
+	}
+
 	from := uint32(1)
 	to := mbox.Messages
 

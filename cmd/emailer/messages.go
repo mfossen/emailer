@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/mail"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -59,6 +60,15 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	var pager string
+	for _, AttemptedPager := range []string{os.Getenv("PAGER"), "less"} {
+		path, found := exec.LookPath(AttemptedPager)
+		if found == nil {
+			pager = path
+			break
+		}
+	}
+
 	for _, msg := range msgs {
 		r := msg.GetBody(&imap.BodySectionName{})
 		m, err := mail.ReadMessage(r)
@@ -70,8 +80,6 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 
-		fmt.Println(string(body))
-
 		var from string
 		for _, addr := range msg.Envelope.From {
 			from += addr.Address() + ", "
@@ -80,12 +88,41 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 			from = strings.TrimSuffix(from, ", ")
 		}
 
-		fmt.Printf("%T\n", msg)
-		fmt.Printf("ID: %v\n", msg.SeqNum)
-		fmt.Printf("Date: %s\n", msg.Envelope.Date)
-		fmt.Printf("From: %v\n", from)
-		fmt.Printf("Subject: %s\n", msg.Envelope.Subject)
-		fmt.Printf("Body: %v\n", string(body))
+		msgContent := strings.Builder{}
+
+		_, err = msgContent.WriteString(fmt.Sprintf("ID: %d\n", msg.SeqNum))
+		if err != nil {
+			return err
+		}
+		_, err = msgContent.WriteString(fmt.Sprintf("Date: %s\n", msg.Envelope.Date))
+		if err != nil {
+			return err
+		}
+		_, err = msgContent.WriteString(fmt.Sprintf("From: %s\n", from))
+		if err != nil {
+			return err
+		}
+		_, err = msgContent.WriteString(fmt.Sprintf("Subject: %s\n", msg.Envelope.Subject))
+		if err != nil {
+			return err
+		}
+		_, err = msgContent.WriteString(fmt.Sprintf("Body: %s\n", string(body)))
+		if err != nil {
+			return err
+		}
+
+		if pager == "" {
+			fmt.Println(msgContent.String())
+			continue
+		}
+
+		command := exec.Command(pager)
+		command.Stdin = strings.NewReader(msgContent.String())
+		command.Stdout = os.Stdout
+		command.Stderr = os.Stderr
+		if err := command.Run(); err != nil {
+			return err
+		}
 	}
 
 	return nil
