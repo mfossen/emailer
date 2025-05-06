@@ -4,12 +4,12 @@ secrets:
 packages:
   - nixos.go
 tasks:
-- tests: |
-    pushd emailer
-    go test ./...
-    popd
-- build: |
-    pushd emailer
-    go build ./...
-    ./emailer
-    popd
+  - tests: |
+      pushd emailer
+      go test ./...
+      popd
+  - build: |
+      pushd emailer
+      go build ./cmd/...
+      ./emailer -h
+      popd
