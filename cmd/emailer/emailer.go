@@ -41,6 +41,18 @@ func main() {
 						Usage:  "list emails in a mailbox",
 						Action: listMessages,
 					},
+					&cli.Command{
+						Name:   "show",
+						Usage:  "show email messages",
+						Action: showMessage,
+						Flags: []cli.Flag{
+							&cli.Uint32SliceFlag{
+								Name:     "id",
+								Usage:    "message id to show",
+								Required: true,
+							},
+						},
+					},
 				},
 			},
 		},
@@ -56,6 +68,12 @@ func main() {
 				Usage:    "IMAP password",
 				Required: true,
 				Sources:  cli.EnvVars("IMAP_PASSWORD"),
+			},
+			&cli.StringFlag{
+				Name:     "address",
+				Usage:    "TLS IMAP server address",
+				Required: true,
+				Sources:  cli.EnvVars("IMAP_ADDRESS"),
 			},
 		},
 	}

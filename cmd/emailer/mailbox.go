@@ -11,7 +11,7 @@ import (
 )
 
 func listMailboxes(c context.Context, cmd *cli.Command) error {
-	client, err := emailer.NewTLSClient(emailer.NewAuth(cmd.String("username"), cmd.String("password")))
+	client, err := newClient(cmd)
 	if err != nil {
 		return err
 	}
