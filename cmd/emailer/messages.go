@@ -108,7 +108,7 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 		if err != nil {
 			return err
 		}
-		_, err = msgContent.WriteString(fmt.Sprintf("Body: %s\n", string(body)))
+		_, err = msgContent.WriteString(fmt.Sprintf("\n%s\n", string(body)))
 		if err != nil {
 			return err
 		}
@@ -138,10 +138,10 @@ func sendMessage(ctx context.Context, cmd *cli.Command) error {
 	defer client.Quit()
 
 	msgTemplate := fmt.Sprintf(`From: <%s>
-Subject:
 To:
+Subject:
 
-<!-- enter body text below this line (this will get removed before sending) -->
+<!--- enter body text below this line (this will get removed before sending) --->
 `, cmd.String("smtp-username"))
 
 	tempfile, err := os.CreateTemp("", "emailer*")
@@ -182,7 +182,7 @@ To:
 		return err
 	}
 
-	reg, err := regexp.Compile(`<!--.*-->\n`)
+	reg, err := regexp.Compile(`<!---.*--->\n`)
 	if err != nil {
 		return err
 	}

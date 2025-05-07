@@ -17,7 +17,7 @@ func newClient(cmd *cli.Command) (*client.Client, error) {
 }
 
 func newSMTPClient(cmd *cli.Command) (*smtp.Client, error) {
-	auth := emailer.NewAuth(cmd.String("username"), cmd.String("password"))
+	auth := emailer.NewAuth(cmd.String("smtp-username"), cmd.String("smtp-password"))
 	client, err := emailer.NewSMTPClient(auth, cmd.String("smtp-address"))
 	if err != nil {
 		return nil, err

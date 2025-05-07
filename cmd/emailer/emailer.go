@@ -9,6 +9,14 @@ import (
 )
 
 func main() {
+
+	mailboxFlag := &cli.StringFlag{
+		Name:     "mailbox",
+		Aliases:  []string{"m"},
+		Usage:    "Mailbox to operate on",
+		Required: true,
+	}
+
 	cmd := &cli.Command{
 		Commands: []*cli.Command{
 			&cli.Command{
@@ -27,19 +35,12 @@ func main() {
 				Name:    "message",
 				Aliases: []string{"msg"},
 				Usage:   "Operations on email messages",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:     "mailbox",
-						Aliases:  []string{"m"},
-						Usage:    "Mailbox to operate on",
-						Required: false,
-					},
-				},
 				Commands: []*cli.Command{
 					&cli.Command{
 						Name:   "list",
 						Usage:  "list emails in a mailbox",
 						Action: listMessages,
+						Flags:  []cli.Flag{mailboxFlag},
 					},
 					&cli.Command{
 						Name:   "show",
@@ -51,6 +52,7 @@ func main() {
 								Usage:    "message id to show",
 								Required: true,
 							},
+							mailboxFlag,
 						},
 					},
 					&cli.Command{
@@ -69,6 +71,12 @@ func main() {
 								Usage:    "SMTP username to use",
 								Required: true,
 								Sources:  cli.EnvVars("SMTP_USERNAME", "USERNAME"),
+							},
+							&cli.StringFlag{
+								Name:     "smtp-password",
+								Usage:    "SMTP password to use",
+								Required: true,
+								Sources:  cli.EnvVars("SMTP_PASSWORD", "PASSWORD"),
 							},
 						},
 					},
