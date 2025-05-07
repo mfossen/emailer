@@ -92,3 +92,35 @@ Subject:
 ```
 
 ## Contributing
+
+### Quickstart: building and testing
+
+- building: `go build -mod=vendor ./cmd/...`
+- testing: `go test -mod=vendor ./...`
+
+CI builds are available on [builds.sr.ht/~mfossen/emailer](https://builds.sr.ht/~mfossen/emailer) which run tests, validates the binary will run, and runs builds for Linux, Windows, and Darwin `GOOS` targets as a sanity check.
+
+
+### Dependencies
+
+The primary outside dependencies this project relies on are:
+
+- [urfave/cli](https://github.com/urfave/cli) for setting up the CLI flag and actions bits
+- [emersion/go-imap](https://github.com/emersion/go-imap/tree/v1) (note: v1 version is used) for the IMAP bits
+- [emersion/go-smtp](https://github.com/emersion/go-smtp) for the SMTP bits
+- [olekukonko/tablewriter](https://github.com/olekukonko/tablewriter) for outputting nicer looking tables
+
+
+### Project Structure
+
+Top-level `*.go` files contain exported functions and corresponding logic for running operations and collecting returned data into nicer types to use by the caller e.g. selecting a mailbox, listing messages, and collecting them from a channel into a slice that gets returned.
+
+Files in `./cmd/emailer` are all part of the `main` package, with `emailer.go` wiring up the command-line bits and separate files setting up compatible [urfave/cli ActionFunc](https://pkg.go.dev/github.com/urfave/cli/v3#ActionFunc) that get called.
+
+Mostly, these functions set up a client, call the exported functions from the top-level, and handle the input/output of the returned content.
+
+### Improvements and Next Steps
+
+- implementing remaining functionality people would reasonably expect, available in [go-imap](https://pkg.go.dev/github.com/emersion/go-imap/client) such as searching, renames, delete, etc.
+- nicer user experience when sending emails, highest priority would be responding to an existing message from the IMAP side, followed by things like guided email creation, handling multipart emails, and dealing with attachments.
+- addressing potential performance issues: listing mailboxes and messages aren't limited or paginated in any way, so it's likely that under large numbers of emails (or complex folder setups) problems will crop up with fetching and outputting those.
