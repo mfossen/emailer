@@ -1,6 +1,7 @@
 image: nixos/unstable
 secrets:
   - 63b447f7-4014-430a-b42c-455950b2a07c
+  - 6f5a2956-4336-4049-934a-eaaa6feec964
 packages:
   - nixos.go
   - nixos.hut
@@ -24,5 +25,5 @@ tasks:
       GOOS=linux go build -mod=vendor ./cmd/...
       GOOS=windows go build -mod=vendor ./cmd/...
       GOOS=darwin go build -mod=vendor -o emailer.darwin ./cmd/...
-      hut git artifact upload emailer emailer.exe emailer.darwin
+      hut --config ~/.hut_config git artifact upload emailer emailer.exe emailer.darwin
       popd
