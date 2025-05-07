@@ -22,6 +22,7 @@ func main() {
 	}
 
 	cmd := &cli.Command{
+		Usage: "command-line application for IMAP and SMTP operations",
 		Commands: []*cli.Command{
 			&cli.Command{
 				Name:    "mailbox",
