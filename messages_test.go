@@ -49,6 +49,10 @@ func (c MockSMTPClient) SendMail(to string, from []string, r io.Reader) error {
 	return nil
 }
 
+func (c MockSMTPClient) Quit() error {
+	return nil
+}
+
 func TestSendMessage(t *testing.T) {
 	mockClient := MockSMTPClient{}
 

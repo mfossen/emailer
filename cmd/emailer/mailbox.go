@@ -10,6 +10,8 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+// listMailboxes calls the top-level ListMailboxes function to output a table
+// of all available IMAP mailboxes with their Name and Attributes
 func listMailboxes(c context.Context, cmd *cli.Command) error {
 	client, err := newClient(cmd)
 	if err != nil {

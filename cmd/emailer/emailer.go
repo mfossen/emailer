@@ -8,6 +8,10 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+// main sets up command line subcommands and necessary flags before running the
+// application at the end of the function.
+// All of the actual logic is in adjacent files that contain ActionFunc's which are used as the
+// cli.Command Action that will get called.
 func main() {
 
 	mailboxFlag := &cli.StringFlag{

@@ -22,6 +22,8 @@ type Message struct {
 	Msg  string
 }
 
+// fetchItems collects imap messages from a channel into a slice using some sane defaults
+// for fetching content
 func fetchItems(client Client, fetch fetch) ([]*imap.Message, error) {
 	msgs := []*imap.Message{}
 	seqSet := new(imap.SeqSet)
@@ -53,6 +55,8 @@ func fetchItems(client Client, fetch fetch) ([]*imap.Message, error) {
 	return msgs, nil
 }
 
+// ListMessages returns all messages in a given imap mailbox
+// TODO: add limits or pagination for large amounts of messages
 func ListMessages(client Client, mailbox string) ([]*imap.Message, error) {
 
 	mbox, err := client.Select(mailbox, true)
@@ -75,6 +79,7 @@ func ListMessages(client Client, mailbox string) ([]*imap.Message, error) {
 	return msgs, nil
 }
 
+// GetMessages returns 1 or more messages given their ids from a single given mailbox
 func GetMessages(client Client, mailbox string, ids ...uint32) ([]*imap.Message, error) {
 
 	_, err := client.Select(mailbox, true)
@@ -90,6 +95,8 @@ func GetMessages(client Client, mailbox string, ids ...uint32) ([]*imap.Message,
 	return msgs, nil
 }
 
+// SendMessage accepts a message, does some parsing and validation of the From and To addresses
+// and sends via SMTP
 func SendMessage(client SMTPClient, msg []byte) error {
 	msgReader := bytes.NewReader(msg)
 	m, err := mail.ReadMessage(msgReader)

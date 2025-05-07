@@ -18,6 +18,8 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+// listMessages gets all available messages from an IMAP mailbox and
+// outputs them in a table with ID, Date, From, and Subject
 func listMessages(ctx context.Context, cmd *cli.Command) error {
 	client, err := newClient(cmd)
 	if err != nil {
@@ -48,6 +50,9 @@ func listMessages(ctx context.Context, cmd *cli.Command) error {
 	return nil
 }
 
+// showMessage fetches one or more messages from an IMAP mailbox and attempts to output them
+// in the system pager given by the PAGER environment variable, "less" if PAGER isn't set, or
+// finally just printing to standard out
 func showMessage(ctx context.Context, cmd *cli.Command) error {
 	client, err := newClient(cmd)
 	if err != nil {
@@ -130,6 +135,9 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 	return nil
 }
 
+// sendMessage opens an available editor given by EDITOR or "vim" with a simple pre-filled
+// set of email headers + a line marking where to enter the body text and sends the email on
+// a save and close of the editor
 func sendMessage(ctx context.Context, cmd *cli.Command) error {
 	client, err := newSMTPClient(cmd)
 	if err != nil {
