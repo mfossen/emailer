@@ -64,6 +64,12 @@ func main() {
 								Required: true,
 								Sources:  cli.EnvVars("SMTP_ADDRESS"),
 							},
+							&cli.StringFlag{
+								Name:     "smtp-username",
+								Usage:    "SMTP username to use",
+								Required: true,
+								Sources:  cli.EnvVars("SMTP_USERNAME", "USERNAME"),
+							},
 						},
 					},
 				},
@@ -74,13 +80,13 @@ func main() {
 				Name:     "username",
 				Usage:    "IMAP username",
 				Required: true,
-				Sources:  cli.EnvVars("IMAP_USERNAME"),
+				Sources:  cli.EnvVars("USERNAME"),
 			},
 			&cli.StringFlag{
 				Name:     "password",
 				Usage:    "IMAP password",
 				Required: true,
-				Sources:  cli.EnvVars("IMAP_PASSWORD"),
+				Sources:  cli.EnvVars("PASSWORD"),
 			},
 			&cli.StringFlag{
 				Name:     "address",

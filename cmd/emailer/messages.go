@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"net/mail"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -135,11 +137,12 @@ func sendMessage(ctx context.Context, cmd *cli.Command) error {
 	}
 	defer client.Quit()
 
-	msgTemplate := `From:
+	msgTemplate := fmt.Sprintf(`From: <%s>
 Subject:
 To:
 
-`
+<!-- enter body text below this line (this will get removed before sending) -->
+`, cmd.String("smtp-username"))
 
 	tempfile, err := os.CreateTemp("", "emailer*")
 	if err != nil {
@@ -179,6 +182,12 @@ To:
 		return err
 	}
 
-	err = emailer.SendMessage(client, msg)
+	reg, err := regexp.Compile(`<!--.*-->\n`)
+	if err != nil {
+		return err
+	}
+	foundBytes := reg.Find(msg)
+	newMsg := bytes.Replace(msg, foundBytes, []byte(""), 1)
+	err = emailer.SendMessage(client, newMsg)
 	return err
 }

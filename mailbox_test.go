@@ -29,7 +29,12 @@ func (m MockClient) List(ref string, name string, ch chan *imap.MailboxInfo) err
 }
 
 func (m MockClient) Select(name string, readOnly bool) (*imap.MailboxStatus, error) {
-	return &imap.MailboxStatus{}, nil
+	mbox := &imap.MailboxStatus{
+		Name:     name,
+		ReadOnly: readOnly,
+		Messages: 3,
+	}
+	return mbox, nil
 }
 
 func (m MockClient) Logout() error {
@@ -37,6 +42,23 @@ func (m MockClient) Logout() error {
 }
 
 func (m MockClient) Fetch(seqnums *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
+	defer close(ch)
+	msgs := []*imap.Message{
+		&imap.Message{
+			SeqNum: 1,
+		},
+		&imap.Message{
+			SeqNum: 2,
+		},
+		&imap.Message{
+			SeqNum: 3,
+		},
+	}
+	for _, msg := range msgs {
+		if seqnums.Contains(msg.SeqNum) {
+			ch <- msg
+		}
+	}
 	return nil
 }
 

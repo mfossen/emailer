@@ -1,6 +1,8 @@
 package emailer
 
 import (
+	"io"
+
 	"github.com/emersion/go-imap"
 	"github.com/emersion/go-imap/client"
 	"github.com/emersion/go-sasl"
@@ -8,42 +10,26 @@ import (
 )
 
 type Client interface {
-	List(ref string, name string, ch chan *imap.MailboxInfo) error
-	Fetch(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error
-	Select(name string, readOnly bool) (*imap.MailboxStatus, error)
+	List(string, string, chan *imap.MailboxInfo) error
+	Fetch(*imap.SeqSet, []imap.FetchItem, chan *imap.Message) error
+	Select(string, bool) (*imap.MailboxStatus, error)
 	Logout() error
 }
 
-type IMAPClient struct {
-	client *client.Client
-}
-
-func (c IMAPClient) Logout() error {
-	return c.client.Logout()
-}
-
-func (c IMAPClient) List(ref string, name string, ch chan *imap.MailboxInfo) error {
-	return c.client.List(ref, name, ch)
-}
-
-func (c IMAPClient) Fetch(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
-	return c.client.Fetch(seqSet, items, ch)
-}
-
-func (c IMAPClient) Select(name string, readOnly bool) (*imap.MailboxStatus, error) {
-	return c.client.Select(name, readOnly)
+type SMTPClient interface {
+	SendMail(string, []string, io.Reader) error
 }
 
 // NewTLSClient creates a new authenticated TLS client
-func NewTLSClient(auth sasl.Client, address string) (IMAPClient, error) {
+func NewTLSClient(auth sasl.Client, address string) (*client.Client, error) {
 	client, err := client.DialTLS(address, nil)
 	if err != nil {
-		return IMAPClient{}, err
+		return nil, err
 	}
 	if err := client.Authenticate(auth); err != nil {
-		return IMAPClient{}, err
+		return nil, err
 	}
-	return IMAPClient{client}, nil
+	return client, nil
 }
 
 func NewSMTPClient(auth sasl.Client, address string) (*smtp.Client, error) {

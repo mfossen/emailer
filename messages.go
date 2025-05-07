@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/emersion/go-imap"
-	"github.com/emersion/go-smtp"
 )
 
 type fetch struct {
@@ -91,7 +90,7 @@ func GetMessages(client Client, mailbox string, ids ...uint32) ([]*imap.Message,
 	return msgs, nil
 }
 
-func SendMessage(client *smtp.Client, msg []byte) error {
+func SendMessage(client SMTPClient, msg []byte) error {
 	msgReader := bytes.NewReader(msg)
 	m, err := mail.ReadMessage(msgReader)
 	if err != nil {
@@ -124,16 +123,6 @@ func SendMessage(client *smtp.Client, msg []byte) error {
 	if err != nil {
 		return err
 	}
-	bb, err := io.ReadAll(msgReader)
-	fmt.Println(string(bb))
-	fmt.Println(from.String())
-	fmt.Println(toAddrs)
 
-	_, err = msgReader.Seek(0, io.SeekStart)
-	if err != nil {
-		return err
-	}
-
-	// return nil
 	return client.SendMail(strings.Trim(from.Address, "<>"), toAddrs, msgReader)
 }
