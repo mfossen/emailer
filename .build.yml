@@ -1,7 +1,7 @@
 image: nixos/unstable
 secrets:
   - 63b447f7-4014-430a-b42c-455950b2a07c
-  - 6f5a2956-4336-4049-934a-eaaa6feec964
+  - 84e8682e-e337-4b8e-97d1-e4191cf9192f
 packages:
   - nixos.go
   - nixos.hut
