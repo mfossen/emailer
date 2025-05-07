@@ -17,7 +17,7 @@ func listMailboxes(c context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
-	defer client.Logout()
+	defer client.Logout() //nolint:errcheck
 
 	mailboxes, err := emailer.ListMailboxes(client)
 	if err != nil {

@@ -25,7 +25,7 @@ func listMessages(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
-	defer client.Logout()
+	defer client.Logout() //nolint:errcheck
 
 	msgs, err := emailer.ListMessages(client, cmd.String("mailbox"))
 	if err != nil {
@@ -58,7 +58,7 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
-	defer client.Logout()
+	defer client.Logout() //nolint:errcheck
 
 	msgID := cmd.Uint32Slice("id")
 
@@ -143,7 +143,7 @@ func sendMessage(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
-	defer client.Quit()
+	defer client.Quit() //nolint:errcheck
 
 	msgTemplate := fmt.Sprintf(`From: <%s>
 To:
@@ -157,11 +157,11 @@ Subject:
 		return err
 	}
 
-	err = os.WriteFile(tempfile.Name(), []byte(msgTemplate), 644)
+	err = os.WriteFile(tempfile.Name(), []byte(msgTemplate), 0o644)
 	if err != nil {
 		return err
 	}
-	defer os.Remove(tempfile.Name())
+	defer os.Remove(tempfile.Name()) //nolint:errcheck
 
 	var editor string
 	for _, attemptedEditor := range []string{os.Getenv("EDITOR"), "vim"} {
