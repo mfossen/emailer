@@ -4,11 +4,14 @@
 
 ## Usage
 
-The application can be installed if you have [go](https://go.dev/doc/install) installed locally by running: `go install github.com/mfossen/emailer/cmd/emailer@latest`.
+Binaries can be downloaded from the [refs page](https://git.sr.ht/~mfossen/emailer/refs).
+
+Alternatively, the application can be installed if you have [go](https://go.dev/doc/install) installed locally by running: `go install github.com/mfossen/emailer/cmd/emailer@latest`.
 
 `emailer` will then be available in your `$GOBIN`, `$GOPATH/bin`, or `$HOME/go/bin` and can be run from that directory.
 
-- alternatively, clone this repo and run `go build ./cmd/...` in it which will place an `emailer` binary at the top level.
+
+Or, clone this repo and run `go build ./cmd/...` in it which will place an `emailer` binary at the top level.
 
 
 `./emailer --help` for a list of commands and flags available, and `./emailer <command> --help` for further help info.
