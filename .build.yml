@@ -3,6 +3,7 @@ secrets:
   - 63b447f7-4014-430a-b42c-455950b2a07c
 packages:
   - nixos.go
+  - nixos.hut
   - nixos.golangci-lint
 tasks:
   - tests: |
