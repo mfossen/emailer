@@ -1,14 +1,27 @@
 package emailer
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+	"net/mail"
+	"strings"
+
 	"github.com/emersion/go-imap"
 	"github.com/emersion/go-imap/client"
+	"github.com/emersion/go-smtp"
 )
 
 type fetch struct {
 	from  uint32
 	to    uint32
 	items []uint32
+}
+
+type Message struct {
+	From string
+	To   string
+	Msg  string
 }
 
 func fetchItems(client *client.Client, fetch fetch) ([]*imap.Message, error) {
@@ -77,4 +90,51 @@ func GetMessages(client *client.Client, mailbox string, ids ...uint32) ([]*imap.
 	}
 
 	return msgs, nil
+}
+
+func SendMessage(client *smtp.Client, msg []byte) error {
+	msgReader := bytes.NewReader(msg)
+	m, err := mail.ReadMessage(msgReader)
+	if err != nil {
+		return err
+	}
+
+	headers := m.Header
+
+	addrParser := mail.AddressParser{}
+	from, err := addrParser.Parse(headers.Get("From"))
+	if err != nil {
+		return err
+	}
+
+	to, err := addrParser.ParseList(headers.Get("To"))
+	if err != nil {
+		return err
+	}
+
+	if from == nil || len(to) == 0 {
+		return fmt.Errorf("error parsing from or to addresses, got from:%v\nto:%v", from, to)
+	}
+
+	var toAddrs []string
+	for _, a := range to {
+		toAddrs = append(toAddrs, strings.Trim(a.Address, "<>"))
+	}
+
+	_, err = msgReader.Seek(0, io.SeekStart)
+	if err != nil {
+		return err
+	}
+	bb, err := io.ReadAll(msgReader)
+	fmt.Println(string(bb))
+	fmt.Println(from.String())
+	fmt.Println(toAddrs)
+
+	_, err = msgReader.Seek(0, io.SeekStart)
+	if err != nil {
+		return err
+	}
+
+	// return nil
+	return client.SendMail(strings.Trim(from.Address, "<>"), toAddrs, msgReader)
 }

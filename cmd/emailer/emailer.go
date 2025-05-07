@@ -32,7 +32,7 @@ func main() {
 						Name:     "mailbox",
 						Aliases:  []string{"m"},
 						Usage:    "Mailbox to operate on",
-						Required: true,
+						Required: false,
 					},
 				},
 				Commands: []*cli.Command{
@@ -50,6 +50,19 @@ func main() {
 								Name:     "id",
 								Usage:    "message id to show",
 								Required: true,
+							},
+						},
+					},
+					&cli.Command{
+						Name:   "send",
+						Usage:  "send an email",
+						Action: sendMessage,
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:     "smtp-address",
+								Usage:    "TLS SMTP server address to use",
+								Required: true,
+								Sources:  cli.EnvVars("SMTP_ADDRESS"),
 							},
 						},
 					},

@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/emersion/go-smtp v0.22.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )

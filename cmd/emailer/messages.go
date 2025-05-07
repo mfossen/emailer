@@ -61,8 +61,8 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	var pager string
-	for _, AttemptedPager := range []string{os.Getenv("PAGER"), "less"} {
-		path, found := exec.LookPath(AttemptedPager)
+	for _, attemptedPager := range []string{os.Getenv("PAGER"), "less"} {
+		path, found := exec.LookPath(attemptedPager)
 		if found == nil {
 			pager = path
 			break
@@ -126,4 +126,59 @@ func showMessage(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	return nil
+}
+
+func sendMessage(ctx context.Context, cmd *cli.Command) error {
+	client, err := newSMTPClient(cmd)
+	if err != nil {
+		return err
+	}
+	defer client.Quit()
+
+	msgTemplate := `From:
+Subject:
+To:
+
+`
+
+	tempfile, err := os.CreateTemp("", "emailer*")
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(tempfile.Name(), []byte(msgTemplate), 644)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tempfile.Name())
+
+	var editor string
+	for _, attemptedEditor := range []string{os.Getenv("EDITOR"), "vim"} {
+		path, found := exec.LookPath(attemptedEditor)
+		if found == nil {
+			editor = path
+			break
+		}
+	}
+
+	if editor == "" {
+		return fmt.Errorf("unable to open a file editor, set EDITOR environment variable")
+	}
+
+	command := exec.Command(editor, tempfile.Name())
+	command.Stdin = os.Stdin
+	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
+
+	if err := command.Run(); err != nil {
+		return err
+	}
+
+	msg, err := os.ReadFile(tempfile.Name())
+	if err != nil {
+		return err
+	}
+
+	err = emailer.SendMessage(client, msg)
+	return err
 }
