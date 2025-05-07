@@ -2,10 +2,9 @@ package emailer
 
 import (
 	"github.com/emersion/go-imap"
-	"github.com/emersion/go-imap/client"
 )
 
-func ListMailboxes(client *client.Client) ([]*imap.MailboxInfo, error) {
+func ListMailboxes(client Client) ([]*imap.MailboxInfo, error) {
 	mboxes := []*imap.MailboxInfo{}
 
 	mailboxes := make(chan *imap.MailboxInfo, 10)

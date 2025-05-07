@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/emersion/go-imap"
-	"github.com/emersion/go-imap/client"
 	"github.com/emersion/go-smtp"
 )
 
@@ -24,7 +23,7 @@ type Message struct {
 	Msg  string
 }
 
-func fetchItems(client *client.Client, fetch fetch) ([]*imap.Message, error) {
+func fetchItems(client Client, fetch fetch) ([]*imap.Message, error) {
 	msgs := []*imap.Message{}
 	seqSet := new(imap.SeqSet)
 
@@ -55,7 +54,7 @@ func fetchItems(client *client.Client, fetch fetch) ([]*imap.Message, error) {
 	return msgs, nil
 }
 
-func ListMessages(client *client.Client, mailbox string) ([]*imap.Message, error) {
+func ListMessages(client Client, mailbox string) ([]*imap.Message, error) {
 
 	mbox, err := client.Select(mailbox, true)
 	if err != nil {
@@ -77,7 +76,7 @@ func ListMessages(client *client.Client, mailbox string) ([]*imap.Message, error
 	return msgs, nil
 }
 
-func GetMessages(client *client.Client, mailbox string, ids ...uint32) ([]*imap.Message, error) {
+func GetMessages(client Client, mailbox string, ids ...uint32) ([]*imap.Message, error) {
 
 	_, err := client.Select(mailbox, true)
 	if err != nil {
